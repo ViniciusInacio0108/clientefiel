@@ -34,5 +34,10 @@ class UserService:
             return user
         return None
 
-    def list_users(self):
-        return list(self._users.values())
+    def edit_user_name(self, email: str, new_name: str) -> str | None:
+        if len(new_name) > 2:
+            self._users[email].name = new_name
+            return self._users[email].name
+        else:
+            raise ValueError("O novo nome não é válido.")
+
