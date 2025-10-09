@@ -1,9 +1,11 @@
 from controllers.user_controller import UserController
 from controllers.client_controller import ClientController
+from controllers.points_controller import PointsController
 
 def menu():
     user_controller = UserController()
     client_controller = ClientController()
+    points_controller = PointsController()
     logged_user = None
 
     while True:
@@ -13,6 +15,7 @@ def menu():
         if logged_user:
             print("3 - Editar estabelecimento")
             print("4 - Gerenciar clientes")
+            print("5 - Gerenciar pontos e recompensas")
         print("0 - Sair")
 
         opcao = input("Escolha uma opção: ").strip()
@@ -32,6 +35,8 @@ def menu():
             user_controller.edit_user_name(logged_user.email)
         elif opcao == '4' and logged_user:
             menu_clientes(client_controller, logged_user.email)
+        elif opcao == '5' and logged_user:
+            menu_pontos(points_controller, logged_user.email)
         elif opcao == '0':
             print("Encerrando...")
             break
@@ -57,6 +62,29 @@ def menu_clientes(client_controller, owner_email):
             client_controller.remover_cliente(owner_email)
         elif opcao == '4':
             client_controller.listar_clientes(owner_email)
+        elif opcao == '0':
+            break
+        else:
+            print("Opção inválida.")
+
+def menu_pontos(points_controller, owner_email):
+    while True:
+        print("\n=== Gerenciamento de Pontos ===")
+        print("1 - Adicionar pontos")
+        print("2 - Editar pontos")
+        print("3 - Remover pontos")
+        print("4 - Listar pontos dos clientes")
+        print("0 - Voltar")
+
+        opcao = input("Escolha uma opção: ").strip()
+        if opcao == '1':
+            points_controller.adicionar_pontos(owner_email)
+        elif opcao == '2':
+            points_controller.editar_pontos(owner_email)
+        elif opcao == '3':
+            points_controller.remover_pontos(owner_email)
+        elif opcao == '4':
+            points_controller.listar_pontos(owner_email)
         elif opcao == '0':
             break
         else:
