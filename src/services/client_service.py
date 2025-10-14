@@ -1,48 +1,39 @@
-import re
-from models.client_model import Client
+from __future__ import annotations
+from typing import List, Dict
+from storage.db import load_db, save_db
+from models.client import Client
+from utils.validators import normalize_cpf, normalize_name
 
 class ClientService:
-    _clients_by_owner = {}
+    def add_client(self, owner_email: str, name: str, cpf: str) -> None:
+        name = normalize_name(name)
+        cpf = normalize_cpf(cpf)
+        db = load_db()
+        if any(client['owner_email']==owner_email and client['cpf']==cpf for client in db['clients']):
+            raise ValueError("Cliente já cadastrado para este estabelecimento.")
+        db['clients'].append(Client(owner_email=owner_email, name=name, cpf=cpf).to_dict())
+        save_db(db)
 
-    def _validate_name(self, name: str):
-        if not name.strip():
-            raise ValueError("O nome do cliente não pode estar vazio.")
+    def edit_client(self, owner_email: str, cpf: str, new_name: str) -> None:
+        cpf = normalize_cpf(cpf)
+        new_name = normalize_name(new_name)
+        db = load_db()
+        for client in db['clients']:
+            if client['owner_email']==owner_email and client['cpf']==cpf:
+                client['name'] = new_name
+                save_db(db)
+                return
+        raise ValueError("Cliente não encontrado.")
 
-    def _validate_cpf(self, cpf: str):
-        cpf_pattern = r'^\d{11}$'
-        if not re.match(cpf_pattern, cpf):
-            raise ValueError("CPF inválido. Use apenas 11 dígitos numéricos.")
-
-    def add_client(self, owner_email: str, name: str, cpf: str):
-        self._validate_name(name)
-        self._validate_cpf(cpf)
-
-        if owner_email not in self._clients_by_owner:
-            self._clients_by_owner[owner_email] = {}
-
-        clients = self._clients_by_owner[owner_email]
-        if cpf in clients:
-            raise ValueError("Já existe um cliente com esse CPF.")
-
-        client = Client(name, cpf, owner_email)
-        clients[cpf] = client
-        return client
-
-    def edit_client(self, owner_email: str, cpf: str, new_name: str):
-        self._validate_name(new_name)
-
-        clients = self._clients_by_owner.get(owner_email, {})
-        if cpf not in clients:
+    def remove_client(self, owner_email: str, cpf: str) -> None:
+        cpf = normalize_cpf(cpf)
+        db = load_db()
+        length_clients_before = len(db['clients'])
+        db['clients'] = [client for client in db['clients'] if not (client['owner_email']==owner_email and client['cpf']==cpf)]
+        if len(db['clients']) == length_clients_before:
             raise ValueError("Cliente não encontrado.")
+        save_db(db)
 
-        clients[cpf].name = new_name
-        return clients[cpf]
-
-    def remove_client(self, owner_email: str, cpf: str):
-        clients = self._clients_by_owner.get(owner_email, {})
-        if cpf not in clients:
-            raise ValueError("Cliente não encontrado.")
-        del clients[cpf]
-
-    def list_clients(self, owner_email: str):
-        return list(self._clients_by_owner.get(owner_email, {}).values())
+    def list_clients(self, owner_email: str) -> List[Dict]:
+        db = load_db()
+        return [client for client in db['clients'] if client['owner_email']==owner_email]

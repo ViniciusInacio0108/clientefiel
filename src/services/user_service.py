@@ -1,43 +1,37 @@
-import re
-from models.user_model import User
+from __future__ import annotations
+from typing import Optional, Dict, Any, List
+from storage.db import load_db, save_db
+from models.user import User
+from utils.validators import is_valid_email, assert_password_strength, normalize_name
 
 class UserService:
-    _users = {}
-
-    def email_is_valid(self, email: str) -> bool:
-        pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-        return re.match(pattern, email) is not None
-
-    def password_is_valid(self, password: str) -> bool:
-        return len(password) >= 6
-
-    def user_exists(self, email: str) -> bool:
-        return email in self._users
-
-    def register_user(self, name: str, email: str, password: str):
-        if not name.strip():
-            raise ValueError("O nome não pode estar vazio.")
-        if not self.email_is_valid(email):
+    def register_user(self, name: str, email: str, password: str) -> None:
+        name = normalize_name(name)
+        if not is_valid_email(email):
             raise ValueError("E-mail inválido.")
-        if not self.password_is_valid(password):
-            raise ValueError("A senha deve ter pelo menos 6 caracteres.")
-        if self.user_exists(email):
-            raise ValueError("Este e-mail já está cadastrado.")
+        assert_password_strength(password)
 
-        user = User(name, email, password)
-        self._users[email] = user
-        return user
+        db = load_db()
+        if any(user['email'].lower() == email.lower() for user in db['users']):
+            raise ValueError("E-mail já cadastrado.")
+        db['users'].append(User(name=name, email=email, password=password).to_dict())
+        save_db(db)
 
-    def authenticate(self, email: str, password: str) -> User | None:
-        user = self._users.get(email)
-        if user and user.password == password:
-            return user
+    def login(self, email: str, password: str) -> Optional[User]:
+        if not is_valid_email(email):
+            raise ValueError("E-mail inválido.")
+        db = load_db()
+        for user in db['users']:
+            if user['email'].lower() == email.lower() and user['password'] == password:
+                return User(**user)
         return None
 
-    def edit_user_name(self, email: str, new_name: str) -> str | None:
-        if len(new_name) > 2:
-            self._users[email].name = new_name
-            return self._users[email].name
-        else:
-            raise ValueError("O novo nome não é válido.")
-
+    def update_name(self, email: str, new_name: str) -> None:
+        new_name = normalize_name(new_name)
+        db = load_db()
+        for user in db['users']:
+            if user['email'].lower() == email.lower():
+                user['name'] = new_name
+                save_db(db)
+                return
+        raise ValueError("Usuário não encontrado.")
