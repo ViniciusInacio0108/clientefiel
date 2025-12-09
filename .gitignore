@@ -3,6 +3,17 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Pytest cache and coverage
+.pytest_cache/
+htmlcov/
+.coverage
+*.cover
+
 # C extensions
 *.so
 
