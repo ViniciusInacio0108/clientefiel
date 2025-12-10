@@ -42,3 +42,7 @@ Uso de memória melhorado, já que o arquivo não precisa ser lido e iterado e t
 
 Ganho de performance claro, e também mais facilidade em lidar com a nova estrutura. Eliminando a necessidade de iterar em um String com padrões diferentes como antes.
 
+**Análise de complexidade**
+
+Com Json, a falta de necessidade de iteração numa String sem padrão, fez com que a nossa complexidade tenha saído de Exponencial para Linear. E em algumas partes, até mesmo O(1).
+
