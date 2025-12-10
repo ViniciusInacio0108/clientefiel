@@ -36,7 +36,7 @@ def sample_client():
     return {
         "owner_email": "joao@example.com",
         "name": "Cliente Teste",
-        "cpf": "12345678901"
+        "cpf": "22188931696"
     }
 
 
@@ -45,7 +45,7 @@ def sample_points():
     """Registro de pontos de exemplo para testes"""
     return {
         "owner_email": "joao@example.com",
-        "client_cpf": "12345678901",
+        "client_cpf": "22188931696",
         "points": 100
     }
 

@@ -177,24 +177,24 @@ class TestCPFNormalization:
     def test_cpf_valido(self):
         """CPF válido com 11 dígitos deve ser normalizado"""
         # ARRANGE
-        cpf = "123.456.789-01"
+        cpf = "221.889.316-96"
         
         # ACT
         resultado = normalize_cpf(cpf)
         
         # ASSERT
-        assert resultado == "12345678901"
+        assert resultado == "22188931696"
 
     def test_cpf_com_apenas_digitos(self):
         """CPF com apenas dígitos deve passar"""
         # ARRANGE
-        cpf = "12345678901"
+        cpf = "221.889.316-96"
         
         # ACT
         resultado = normalize_cpf(cpf)
         
         # ASSERT
-        assert resultado == "12345678901"
+        assert resultado == "22188931696"
 
     def test_cpf_com_poucos_digitos(self):
         """CPF com menos de 11 dígitos deve falhar"""

@@ -325,7 +325,7 @@ class TestPointsService:
         with pytest.raises(ValueError, match="Cliente não existe"):
             servico.add_points(
                 owner_email="loja@example.com",
-                client_cpf="12345678901",
+                client_cpf="22188931696",
                 to_add_points=100
             )
 
