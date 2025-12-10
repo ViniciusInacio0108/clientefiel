@@ -1,5 +1,7 @@
 # ClienteFiel
 
+Esse projeto foi realizado pelos discentes: Vinícius Inácio e Adrian Bandeira. Adrian ficou responsável pelo desenvolvimento junto a Vinícius na U1. Para a entrega da U3, os testes foram desenvolvidos por Adrian e as documentações e coverage por Vinícius.
+
 Repositório reestruturado aplicando **código limpo** e **separação de responsabilidades**:
 - `models/` — entidades de domínio (User, Client, Points)
 - `services/` — regras de negócio e validações
